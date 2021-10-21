@@ -13,6 +13,18 @@
         Admin
       </v-btn>
 
+            <v-btn to="/employee">
+        Employee
+      </v-btn>
+
+    <v-btn to="/booking_time">
+        จองเวลา
+      </v-btn>
+
+          <v-btn to="/schedule">
+        ปฏิทินนัดหมาย
+      </v-btn>
+
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
