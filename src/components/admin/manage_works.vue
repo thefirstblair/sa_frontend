@@ -28,10 +28,16 @@
     >
       <template v-slot:[`item.action`]="{ item }">
         <v-btn
-          v-if="item.status == 'wait'"
+          v-if="item.status == 'รอแจกจ่ายงาน'"
           @click="dialog_selectEmployee = true"
           >เลือกพนักงาน</v-btn
         >
+
+        <v-btn v-else-if="item.status == 'เห็นชอบ' || item.status == 'ไม่เห็นชอบ'"
+          >ดูรายละเอียดรายงาน</v-btn
+        >
+        <h1 v-else></h1>
+
       </template>
     </v-data-table>
     <!-- Dialog Add Work -->
@@ -116,8 +122,14 @@
               <span class="text-h4">มอบหมายงาน</span>
             </v-card-title>
             <v-divider />
-   <v-col cols="12"> 
-            <v-select :items="employee" label="เลือกพนักงาน" dense style="margin:20px"></v-select></v-col>
+            <v-col cols="12">
+              <v-select
+                :items="employee"
+                label="เลือกพนักงาน"
+                dense
+                style="margin:20px"
+              ></v-select
+            ></v-col>
             <v-card-text>
               <small>* หากเลือกไปแล้วจะไม่สามารถกลับมาแก้ไขได้อีก</small>
             </v-card-text>
@@ -168,9 +180,9 @@ export default {
         { title: "test1", status: "เห็นชอบ", employee: "ณิชติตรา" },
         { title: "test2", status: "ไม่เห็นชอบ", employee: "ปุณยาพร" },
         { title: "test3", status: "รอการประเมิน", employee: "ธันยธรณ์" },
-        { title: "test4", status: "wait", employee: "-" },
+        { title: "test4", status: "รอแจกจ่ายงาน", employee: "-" },
       ],
-      employee: ['ณิชติตรา', 'ปุณยาพร', 'ธันยธรณ์']
+      employee: ["ณิชติตรา", "ปุณยาพร", "ธันยธรณ์"],
     };
   },
 };
