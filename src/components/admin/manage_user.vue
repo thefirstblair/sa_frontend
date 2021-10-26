@@ -19,13 +19,22 @@
 
       <v-row>
         <v-col cols="12">
-          <v-data-table :headers="headers" :items="items" :search="search">
-            <template v-slot:[`item.actions`]="{}">
-              <v-icon small @click="dialog_editUser = true">
+          <v-data-table :headers="headers" :items="user" :search="search">
+            <template v-slot:[`item.actions`]="{ item, index }">
+              <v-icon
+                small
+                @click="
+                  dialog_editUser = true;
+                  editUser.id = item.id;
+                  editUser.name = item.name;
+                  editUser.Username = item.username;
+                  editUser.index = index;
+                "
+              >
                 mdi-pencil
               </v-icon>
 
-              <v-icon small>
+              <v-icon small @click="deleteUser(item.id, index)">
                 mdi-delete
               </v-icon>
             </template>
@@ -38,7 +47,10 @@
         <v-app id="addUser">
           <v-dialog v-model="dialog_addUser" max-width="600px">
             <v-card>
-              <v-form>
+              <v-form
+                @submit.prevent="confirmed_addUser"
+                v-model="addUserValid"
+              >
                 <v-card-title>
                   <span class="text-h5">เพิ่มผู้ใช้</span>
                 </v-card-title>
@@ -50,6 +62,7 @@
                           required
                           label="Name"
                           :rules="[(v) => !!v || 'โปรดใส่ชื่อผู้ใช้']"
+                          v-model="addUser.name"
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12">
@@ -58,22 +71,15 @@
                           label="Username"
                           :rules="[(v) => !!v || 'โปรดใส่ Username']"
                           maxlength="20"
+                          v-model="addUser.username"
                         ></v-text-field>
                       </v-col>
                       <v-col cols="6">
                         <v-text-field
                           required
                           label="Password"
-                          :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                          :type="show1 ? 'text' : 'password'"
-                          @click:append="show1 = !show1"
-                        ></v-text-field>
-                      </v-col>
-
-                      <v-col cols="6">
-                        <v-text-field
-                          required
-                          label="Confirm Password"
+                          v-model="addUser.password"
+                          :rules="[rules.required, rules.min]"
                           :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                           :type="show1 ? 'text' : 'password'"
                           @click:append="show1 = !show1"
@@ -87,14 +93,21 @@
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="dialog_addUser = false"
+                    @click="
+                      dialog_addUser = false;
+                      addUser.name = '';
+                      addUser.username = '';
+                      addUser.password = '';
+                      show1 = false;
+                    "
                   >
                     Close
                   </v-btn>
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="dialog_addUser = false"
+                    type="submit"
+                    :disabled="!addUserValid"
                   >
                     Save
                   </v-btn>
@@ -109,7 +122,11 @@
       <div id="app">
         <v-app id="editUser">
           <v-dialog v-model="dialog_editUser" max-width="600px">
-            <v-form>
+            <v-form
+              ref="editinfo"
+              @submit.prevent="updateUser"
+              v-model="editUserValid"
+            >
               <v-card>
                 <v-card-title>
                   <span class="text-h5">แก้ไขผู้ใช้งาน</span>
@@ -117,30 +134,37 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-text-field
-                        label="Name"
-                        :rules="[(v) => !!v || 'โปรดใส่ชื่อผู้ใช้']"
-                        >Name</v-text-field
-                      >
+                      <v-col>
+                        <v-text-field
+                          label="Name"
+                          v-model="editUser.name"
+                          :rules="[(v) => !!v || 'โปรดใส่ชื่อผู้ใช้']"
+                          >Name</v-text-field
+                        >
+                      </v-col>
                     </v-row>
                     <v-row>
-                      <v-col cols="6">
+                      <v-col>
                         <v-text-field
                           label="Password"
-                          :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                          :type="show1 ? 'text' : 'password'"
-                          @click:append="show1 = !show1"
-                          >Password</v-text-field
-                        > </v-col
-                      ><v-col cols="6">
-                        <v-text-field
-                          label="Confirm Password"
+                          v-model="editUser.password"
                           :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                           :type="show1 ? 'text' : 'password'"
                           @click:append="show1 = !show1"
                           >Password</v-text-field
                         >
                       </v-col>
+
+                      <!-- <v-col cols="6">
+                        <v-text-field
+                          label="Confirm Password"
+                          v-model="editUser.confirm_password"
+                          :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                          :type="show1 ? 'text' : 'password'"
+                          @click:append="show1 = !show1"
+                          >Confirm Password</v-text-field
+                        >
+                      </v-col> -->
                     </v-row>
                   </v-container>
                 </v-card-text>
@@ -157,7 +181,8 @@
                   <v-btn
                     color="blue darken-1"
                     text
-                    @click="dialog_editUser = false"
+                    :disabled="!editUserValid"
+                    type="submit"
                   >
                     Save
                   </v-btn>
@@ -172,13 +197,23 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
       search: "",
       dialog_addUser: false,
       dialog_editUser: false,
+      addUserValid: false,
+      editUserValid: false,
       show1: false,
+      addUser: { name: "", username: "", password: "", role: "EMPLOYEE" },
+      editUser: {},
+      rules: {
+        required: (value) => !!value || "Required Password.",
+        min: (v) => (v && v.length >= 8) || "Min 8 characters",
+      },
+      user: [],
       headers: [
         {
           text: "Username",
@@ -191,29 +226,120 @@ export default {
         { text: "Permission", value: "role" },
         { text: "", value: "actions" },
       ],
-      items: [
-        {
-          username: "user1",
-          name: "ปุณยาพร",
-          role: "Employee",
-        },
-        {
-          username: "user2",
-          name: "ควย",
-          role: "Employee",
-        },
-        {
-          username: "user3",
-          name: "หิวข้าว",
-          role: "Employee",
-        },
-        {
-          username: "user4",
-          name: "ไอสัด",
-          role: "Employee",
-        },
-      ],
     };
+  },
+  methods: {
+    // Add
+    confirmed_addUser() {
+      const token = this.$store.state.token;
+      this.$http
+        .post("http://127.0.0.1:8000/api/user/", this.addUser, {
+          headers: { Authorization: `${token}` },
+        })
+        .then((response) => {
+          if (response.data && response.data.status != "error") {
+            this.dialog_addUser = false;
+            Swal.fire("เพิ่มผู้ใช้งานเรียบร้อย", "", "success");
+            this.user.push(response.data.data);
+            console.log(response.data.data);
+            console.log(this.user);
+            this.addUser = {
+              name: "",
+              username: "",
+              password: "",
+            };
+          } else {
+            Swal.fire(
+              "ไม่สามารถเพิ่มผู้ใช้งานได้ โปรดตรวจสอบ Username กับ Password ของท่านอีกครั้ง",
+              "",
+              "error"
+            );
+            console.log(response.data.error);
+          }
+        });
+    },
+    // Update
+    updateUser() {
+      console.log(this.$refs.editinfo);
+      if (this.$refs.editinfo.validate()) {
+        const token = this.$store.state.token;
+        this.$http
+          .put(
+            "http://127.0.0.1:8000/api/user/" + this.editUser.id,
+            this.editUser,
+            {
+              headers: { Authorization: `${token}` },
+            }
+          )
+          .then((response) => {
+            if (response.data && response.data.status != "error") {
+              this.user.splice(this.editUser.index, 1, response.data);
+              Swal.fire("แก้ไขเรียบร้อย", "", "success");
+            } else {
+              Swal.fire(
+                "ไม่สามารถแก้ไขผู้ใช้งานได้ โปรดตรวจสอบอีกครั้ง",
+                "",
+                "error"
+              );
+              console.log(response.data.error);
+            }
+          });
+        this.editUser.password = "";
+        this.dialog_editUser = false;
+      }
+    },
+
+    // Delete
+    deleteUser(id, index) {
+      Swal.fire({
+        title: "คุณแน่ใจว่าจะลบ?",
+        text: "การลบจะไม่สามารถคืนสิ่งที่ลบได้",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยัน",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const token = this.$store.state.token;
+          console.log(id);
+          console.log(index);
+          this.$http
+            .delete("http://127.0.0.1:8000/api/user/" + id, {
+              headers: { Authorization: `${token}` },
+            })
+            .then((response) => {
+              if (response.data && response.data.status != "error") {
+                Swal.fire("ลบผู้ใช้นี้เรียบร้อย", "", "success");
+                this.user.splice(index, 1);
+              } else {
+                Swal.fire("ไม่สามารถลบผู้ใช้งานได้", "", "error");
+                console.log(response.data.error);
+              }
+            });
+        }
+      });
+    },
+  },
+
+  computed: {
+    getUser() {
+      return this.user;
+    },
+  },
+  created() {
+    const token = this.$store.state.token;
+    this.$http
+      .get("http://127.0.0.1:8000/api/user", {
+        headers: { Authorization: `${token}` },
+      })
+      .then((response) => {
+        if (response.data && response.data.status != "error") {
+          this.user = response.data;
+        } else {
+          console.log(response.data.error);
+        }
+      });
   },
 };
 </script>
