@@ -27,6 +27,7 @@
           @click="
             dialog_changeStatus = true;
             editStatus.id = item.id;
+            editStatus.name = item.name;
             editStatus.index = index;
           "
           >เลือกสถานะ</v-btn
@@ -69,7 +70,7 @@
               <v-divider />
               <v-col cols="12">
                 <v-select
-                  v-model="status"
+                  v-model="editStatus.status"
                   :items="status_items"
                   label="เลือกสถานะ"
                   dense
@@ -144,15 +145,16 @@ export default {
             Swal.fire("แก้ไขเรียบร้อย", "", "success");
           } else {
             Swal.fire(
-              "ไม่สามารถแก้ไขผู้ใช้งานได้ โปรดตรวจสอบอีกครั้ง",
+              "ไม่สามารถแก้ไขได้ โปรดตรวจสอบอีกครั้ง",
               "",
               "error"
             );
             console.log(response.data.error);
           }
         });
-      this.editUser.password = "";
-      this.dialog_editUser = false;
+      this.editStatus.status = "";
+      this.dialog_changeStatus = false;
+      this.appointment.index
     },
   },
   created() {
