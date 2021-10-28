@@ -15,6 +15,11 @@
       </v-col>
     </v-row>
 
+    <!-- <v-btn @click="dialog_addAppointment = true">
+      <v-icon>mdi-plus</v-icon>
+      นัดหมายลูกน้อง
+    </v-btn> -->
+
     <v-data-table
       :headers="headers"
       :items="appointment"
@@ -34,24 +39,113 @@
         >
         <v-btn
           v-else-if="item.status == 'Confirmed' || item.status == 'Declined'"
-          @click="dialog_showDetail = true"
+          @click="
+            dialog_showDetail = true;
+            showItem = item;
+            showItem.name = item.user.name;
+          "
           >ดู Detail</v-btn
         >
       </template>
     </v-data-table>
 
+    <!-- Dialog Add Appointment-->
+    <!-- <div id="app">
+      <v-app id="addAppointment">
+        <v-dialog v-model="dialog_addAppointment" max-width="600px">
+          <v-card>
+            <v-form @submit.prevent="confirmed_addAppointment" v-model="addAppointmentValid">
+              <v-card-title>
+                <span class="text-h5">เพิ่มนัดหมายกับลูกน้อง</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        required
+                        label="หัวข้อ"
+                        :rules="[(v) => !!v || 'โปรดใส่หัวข้อ']"
+                        v-model="addUser.name"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                        required
+                        label="Username"
+                        :rules="[(v) => !!v || 'โปรดใส่ Username']"
+                        maxlength="20"
+                        v-model="addUser.username"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-text-field
+                        required
+                        label="Password"
+                        v-model="addUser.password"
+                        :rules="[rules.required, rules.min]"
+                        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                        :type="show1 ? 'text' : 'password'"
+                        @click:append="show1 = !show1"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="
+                    dialog_addUser = false;
+                    addUser.name = '';
+                    addUser.username = '';
+                    addUser.password = '';
+                    show1 = false;
+                  "
+                >
+                  Close
+                </v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  type="submit"
+                  :disabled="!addUserValid"
+                >
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-form>
+          </v-card>
+        </v-dialog>
+      </v-app>
+    </div> -->
+
     <!-- Dialog Detail -->
     <v-dialog
       transition="dialog-bottom-transition"
-      width="600px"
-      height="1000px"
+      width="800px"
       v-model="dialog_showDetail"
     >
       <v-card>
         <v-toolbar color="primary" dark>รายละเอียดการนัดหมาย</v-toolbar>
-        <v-card-text>
-          <div class="text-h2 pa-12"></div>
-        </v-card-text>
+        <v-col>
+          <p class="font-weight-medium">หัวข้อ: {{ showItem.title }}</p>
+          <p class="font-weight-medium">รายละเอียด: {{ showItem.detail }}</p>
+          <p class="font-weight-medium">
+            วันนัดหมาย: {{ showItem.booking_date }} เวลา:
+            {{ showItem.booking_time }}
+          </p>
+          <p class="font-weight-medium">
+            ผู้นัดหมาย: {{ showItem.name }} 
+          </p>
+
+                    <p class="font-weight-medium">
+           สถานะ: {{ showItem.status }} 
+          </p>
+          
+        </v-col>
         <v-card-actions class="justify-end">
           <v-btn text @click="dialog_showDetail = false">Close</v-btn>
         </v-card-actions>
@@ -110,7 +204,8 @@ export default {
       dialog_changeStatus: false,
       dialog_showDetail: false,
       changeStatusValid: false,
-      editStatus:{},
+      editStatus: {},
+      showItem: {},
       headers: [
         {
           text: "วันที่",
@@ -144,17 +239,13 @@ export default {
             this.appointment.splice(this.editStatus.index, 1, response.data);
             Swal.fire("แก้ไขเรียบร้อย", "", "success");
           } else {
-            Swal.fire(
-              "ไม่สามารถแก้ไขได้ โปรดตรวจสอบอีกครั้ง",
-              "",
-              "error"
-            );
+            Swal.fire("ไม่สามารถแก้ไขได้ โปรดตรวจสอบอีกครั้ง", "", "error");
             console.log(response.data.error);
           }
         });
       this.editStatus.status = "";
       this.dialog_changeStatus = false;
-      this.appointment.index
+      this.appointment.index;
     },
   },
   created() {

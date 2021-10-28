@@ -22,22 +22,22 @@
     <!-- Table -->
     <v-data-table
       :headers="headers"
-      :items="items"
+      :items="works"
       :search="search"
       class="elevation-1"
     >
       <template v-slot:[`item.action`]="{ item }">
         <v-btn
-          v-if="item.status == 'รอแจกจ่ายงาน'"
+          v-if="item.status == 'รอดำเนินการ'"
           @click="dialog_selectEmployee = true"
           >เลือกพนักงาน</v-btn
         >
 
-        <v-btn v-else-if="item.status == 'เห็นชอบ' || item.status == 'ไม่เห็นชอบ'"
+        <v-btn
+          v-else-if="item.status == 'เห็นชอบ' || item.status == 'ไม่เห็นชอบ'"
           >ดูรายละเอียดรายงาน</v-btn
         >
         <h1 v-else></h1>
-
       </template>
     </v-data-table>
     <!-- Dialog Add Work -->
@@ -45,70 +45,104 @@
       <v-app id="addWork">
         <v-dialog v-model="dialog_addWork" persistent max-width="800px">
           <v-card>
-            <v-card-title>
-              <span class="text-h4">เพิ่มเรื่องร้องเรียนใหม่</span>
-            </v-card-title>
-            <v-divider />
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field label="หัวข้อ*" required></v-text-field>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field
-                      label="ชื่อหน่วยงานที่ร้องเรียน*"
-                    ></v-text-field>
-                  </v-col>
+            <v-form @submit.prevent="confirmed_addWork" v-model="addWorkValid">
+              <v-card-title>
+                <span class="text-h4">เพิ่มเรื่องร้องเรียนใหม่</span>
+              </v-card-title>
+              <v-divider />
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        label="หัวข้อ*"
+                        v-model="addWork.title"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="addWork.accused_name"
+                        required
+                        label="ชื่อหน่วยงานที่ร้องเรียน*"
+                      ></v-text-field>
+                    </v-col>
 
-                  <v-col cols="12">
-                    <v-text-field label="ชื่อผู้ร้องเรียน*"></v-text-field>
-                  </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                        label="ชื่อผู้ร้องเรียน*"
+                        v-model="addWork.complainer_name"
+                        required
+                      ></v-text-field>
+                    </v-col>
 
-                  <v-col cols="12">
-                    <v-textarea
-                      label="รายละเอียด*"
-                      auto-grow
-                      outlined
-                      rows="3"
-                      row-height="15"
-                    ></v-textarea>
-                  </v-col>
+                    <v-col cols="12">
+                      <v-textarea
+                        v-model="addWork.detail"
+                        required
+                        label="รายละเอียด*"
+                        auto-grow
+                        outlined
+                        rows="3"
+                        row-height="15"
+                      ></v-textarea>
+                    </v-col>
 
-                  <v-col cols="12" sm="6">
-                    <v-select
-                      :items="['ร้องเรียนเกี่ยวกับการตรวจสอบ']"
-                      label="ประเภทการร้องเรียน*"
-                      required
-                    ></v-select>
-                  </v-col>
+                    <v-col cols="12" sm="6">
+                      <v-select
+                        v-model="addWork.type"
+                        :items="['ร้องเรียนเกี่ยวกับการตรวจสอบ']"
+                        label="ประเภทการร้องเรียน*"
+                        required
+                      ></v-select>
+                    </v-col>
 
-                  <v-col cols="12" sm="6">
-                    <v-select
-                      :items="['กรุงเทพมหานคร']"
-                      label="จังหวัด*"
-                      required
-                    ></v-select>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <small>* indicates required field</small>
-              <v-file-input
-                accept="image/*"
-                label="อัพโหลดเอกสารเพิ่มเติม"
-              ></v-file-input>
-              <v-col> </v-col>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialog_addWork = false">
-                Close
-              </v-btn>
-              <v-btn color="blue darken-1" text @click="dialog_addWork = false">
-                Save
-              </v-btn>
-            </v-card-actions></v-card
-          >
+                    <v-col cols="12" sm="6">
+                      <v-select
+                        v-model="addWork.province"
+                        :items="province"
+                        label="จังหวัด*"
+                        required
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                </v-container>
+                <small>* indicates required field</small>
+                   <v-col cols="12" sm="6">
+                      <v-text-field
+                        v-model="addWork.pdf_file"
+                     
+                        label="pdf file"
+                   
+                      ></v-text-field>
+                    </v-col>
+                <!-- <v-file-input
+                  v-model="addWork.pdf_file"
+                  accept="image/*"
+                  label="อัพโหลดเอกสารเพิ่มเติม"
+                ></v-file-input> -->
+                <v-col> </v-col>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="dialog_addWork = false"
+                >
+                  Close
+                </v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  type="submit"
+                  :disabled="!addWorkValid"
+                >
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-form>
+          </v-card>
         </v-dialog>
       </v-app>
     </div>
@@ -124,7 +158,7 @@
             <v-divider />
             <v-col cols="12">
               <v-select
-                :items="employee"
+                :items="employees"
                 label="เลือกพนักงาน"
                 dense
                 style="margin:20px"
@@ -158,10 +192,25 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
+
 export default {
   data() {
     return {
       search: "",
+      addWorkValid: false,
+      addWork: {
+        title: "",
+        accused_name: "",
+        complainer_name: "",
+        detail: "",
+        type: "",
+        province: "",
+        pdf_file: "",
+      },
+      province:['กำแพงเพชร', 'ชัยนาท', 'นครนายก', 'นครสวรรค์',
+            'นครปฐม', 'นนทบุรี', 'ปทุมธานี', 'พระนครศรีอยุธยา', 'พิจิตร', 'พิษณุโลก','เพชรบูรณ์', 'ลพบุรี', 'สมุทรปราการ', 'สระบุรี', 'สุโขทัย', 'สุพรรณบุรี'
+            , 'อ่างทอง', 'อุทัยธานี'],
       dialog_addWork: false,
       dialog_selectEmployee: false,
       headers: [
@@ -173,17 +222,55 @@ export default {
         },
 
         { text: "สถานะงาน", value: "status" },
-        { text: "ผู้รับผิดชอบงาน", value: "employee" },
+        { text: "ผู้รับผิดชอบงาน", value: "user.name" },
         { text: "มอบหมายงาน", value: "action" },
       ],
-      items: [
-        { title: "test1", status: "เห็นชอบ", employee: "ณิชติตรา" },
-        { title: "test2", status: "ไม่เห็นชอบ", employee: "ปุณยาพร" },
-        { title: "test3", status: "รอการประเมิน", employee: "ธันยธรณ์" },
-        { title: "test4", status: "รอแจกจ่ายงาน", employee: "-" },
-      ],
-      employee: ["ณิชติตรา", "ปุณยาพร", "ธันยธรณ์"],
+      works: [],
+      employees: [],
     };
+  },
+  methods: {
+    confirmed_addWork() {
+      const token = this.$store.state.token;
+      this.$http
+        .post("http://127.0.0.1:8000/api/work/", this.addWork, {
+          headers: { Authorization: `${token}` },
+        })
+        .then((response) => {
+          if (response.data && response.data.status != "error") {
+            this.dialog_addWork = false;
+            Swal.fire("เพิ่มเรื่องร้องเรียนใหม่เรียบร้อย", "", "success");
+            this.works.push(response.data);
+            console.log(response.data);
+            console.log(this.works);
+            this.addWork = {};
+          } else {
+            Swal.fire(
+              "ไม่สามารถเพิ่มเรื่องร้องเรียนใหม่ได้ โปรดตรวจสอบอีกครั้ง",
+              "",
+              "error"
+            );
+            console.log(response.data.error);
+          }
+        });
+    },
+  },
+  created() {
+    const token = this.$store.state.token;
+    this.$http
+      .get("http://127.0.0.1:8000/api/work", {
+        headers: { Authorization: `${token}` },
+      })
+      .then((response) => {
+        if (response.data && response.data.status != "error") {
+          this.works = response.data;
+          // this.employees = response.data.employees;
+          // console.log(this.works);
+          //  console.log(this.employees);
+        } else {
+          console.log(response.data.error);
+        }
+      });
   },
 };
 </script>
