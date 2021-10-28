@@ -2,8 +2,8 @@
 <template>
 <v-container style="padding-top:30vh">
 
-  <v-row class="white--text" justify="center">
-      <v-col class="white--text text-center" cols="12" tag="h1">
+  <v-row justify="center">
+      <v-col class="text-center" cols="12" tag="h1">
         <span class="font-weight-black" style="font-size: 200%">
           เว็ปไซต์บริหารจัดการงานร้องเรียน
         </span>

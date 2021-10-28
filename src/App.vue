@@ -43,8 +43,9 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-
+    <v-app>
        <router-view />
+    </v-app>
   </div>
 </template>
 

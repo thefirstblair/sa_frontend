@@ -42,7 +42,7 @@
           @click="
             dialog_showDetail = true;
             showItem = item;
-            showItem.name = item.user.name;
+      
           "
           >ดู Detail</v-btn
         >
@@ -137,14 +137,9 @@
             วันนัดหมาย: {{ showItem.booking_date }} เวลา:
             {{ showItem.booking_time }}
           </p>
-          <p class="font-weight-medium">
-            ผู้นัดหมาย: {{ showItem.name }} 
-          </p>
+          <p class="font-weight-medium">ผู้นัดหมาย: {{ showItem.name}}</p>
 
-                    <p class="font-weight-medium">
-           สถานะ: {{ showItem.status }} 
-          </p>
-          
+          <p class="font-weight-medium">สถานะ: {{ showItem.status }}</p>
         </v-col>
         <v-card-actions class="justify-end">
           <v-btn text @click="dialog_showDetail = false">Close</v-btn>
@@ -204,7 +199,7 @@ export default {
       dialog_changeStatus: false,
       dialog_showDetail: false,
       changeStatusValid: false,
-      editStatus: {},
+      editStatus: { sender: {} },
       showItem: {},
       headers: [
         {
@@ -214,7 +209,7 @@ export default {
           value: "booking_date",
         },
         { text: "เวลา", value: "booking_time" },
-        { text: "ผู้นัดหมาย", value: "user.name" },
+        { text: "ผู้นัดหมาย", value: "sender.name" },
         { text: "หัวข้อ", value: "title" },
         { text: "สถานะ", value: "status" },
         { text: "กำหนดสถานะ", value: "action" },
@@ -256,6 +251,7 @@ export default {
       })
       .then((response) => {
         if (response.data && response.data.status != "error") {
+          console.log(response.data);
           this.appointment = response.data;
         } else {
           console.log(response.data.error);

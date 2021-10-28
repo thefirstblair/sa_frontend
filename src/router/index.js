@@ -29,6 +29,11 @@ const routes = [
     name: "Schedule",
     component: () => import('../components/admin/schedule.vue'),
   },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import('../views/Login.vue'),
+  },
 ]
 
 const router = new VueRouter({

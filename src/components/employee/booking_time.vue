@@ -90,8 +90,6 @@ export default {
     },
     confirm_addAppointment() {
       const token = this.$store.state.token;
-      this.addAppointment.sender_id = this.$store.state.token;
-      this.addAppointment.receiver_id = 1;
       this.$http
         .post("http://127.0.0.1:8000/api/appointment/", this.addAppointment, {
           headers: { Authorization: `${token}` },
