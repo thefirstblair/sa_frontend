@@ -74,9 +74,9 @@
           <v-spacer></v-spacer>
           <h3>สรุปผลจากผู้ใต้บังคับบัญชา {{ showSummary.user.name }}</h3>
           <p>ผู้ตรวจสอบ: {{ showSummary.user.name }}</p>
-          <p>รายละเอียดการสรุปผล: {{ showSummary.summary.summary_detail}}</p>
-          <p>สถานะงาน: {{showSummary.summary.conclusion }}</p>
-          <p>ไฟล์ผลการตรวจสอบที่แนบมาด้วย: {{ showSummary.summary.pdf_file }}</p>
+          <p>รายละเอียดการสรุปผล: {{ showSummary.summary && showSummary.summary.summary_detail}}</p>
+          <p>สถานะงาน: {{showSummary.summary && showSummary.summary.conclusion }}</p>
+          <p>ไฟล์ผลการตรวจสอบที่แนบมาด้วย: {{ showSummary.summary && showSummary.summary.pdf_file }}</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>

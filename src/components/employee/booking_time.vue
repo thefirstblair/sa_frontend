@@ -32,7 +32,7 @@
           </v-col>
           <div id="app" data-app>
             <v-row>
-              <v-col cols="5">
+              <v-col cols="2">
                 <v-menu>
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
@@ -52,7 +52,7 @@
                 ></v-menu>
               </v-col>
 
-              <v-col cols="3">
+              <v-col cols="2">
                 <v-select
                   :items="time"
                   label="เลือกเวลานัด"
@@ -61,7 +61,7 @@
               </v-col>
             </v-row>
           </div>
-          <v-btn large text color="primary" type="submit">
+          <v-btn large text color="primary" type="submit" :disabled="!addAppointmentValid">
             ส่งคำขอคำปรึกษา
           </v-btn>
         </v-form>
