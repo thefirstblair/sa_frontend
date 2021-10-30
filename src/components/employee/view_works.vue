@@ -16,18 +16,45 @@
               v-if="item.status == 'รอดำเนินการ'"
               @click="
                 dialog_result = true;
-
                 itemSummary = item;
-
                 itemSummary.index = index;
                 itemSummary.work_id = item.id;
               "
               >ส่งรายงาน</v-btn
             >
+            <v-btn v-if="item.status == 'รอดำเนินการ'" @click="dialog_showDetail = true; showDetail = item;">ดูรายละเอียด</v-btn>
+            <v-btn v-else-if="item.status == 'เห็นชอบ' || item.status == 'ไม่เห็นชอบ'" @click="dialog_showSummary = true; showSummary = item;">ดูสรุปผล</v-btn>
           </template>
         </v-data-table>
       </v-col></v-row
     >
+    <!-- Dialog Detail-->
+    <v-dialog v-model="dialog_showDetail" width="600px">
+      <v-card>
+        <v-card-title>
+          <h2>รายละเอียดงาน</h2>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <p>ชื่อหัวข้อ: {{ showDetail.title }}</p>
+          <p>ชื่อหน่วยงานที่ร้องเรียน: {{ showDetail.accused_name }}</p>
+          <p>ชื่อผู้ร้องเรียน: {{ showDetail.complainer_name }}</p>
+          <p>ประเภทการร้องเรียน: {{ showDetail.type }}</p>
+          <p>รายละเอียด: {{ showDetail.detail }}</p>
+          <p>ไฟล์ pdf:</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog_showDetail = false"
+          >
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Dialog ส่งรายงานผล -->
     <v-dialog v-model="dialog_result" max-width="600px">
@@ -93,6 +120,50 @@
         </v-form>
       </v-card>
     </v-dialog>
+    
+    <!-- Dialog แสดงสรุปผล-->
+      <v-dialog v-model="dialog_showSummary" width="600px">
+      <v-card>
+        <v-card-title>
+          <h2>สรุปผลการร้องเรียน</h2>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <p>ชื่อหัวข้อ: {{ showSummary.title }}</p>
+          <p>ชื่อหน่วยงานที่ร้องเรียน: {{ showSummary.accused_name }}</p>
+          <p>ชื่อผู้ร้องเรียน: {{ showSummary.complainer_name }}</p>
+          <p>ประเภทการร้องเรียน: {{ showSummary.type }}</p>
+          <p>รายละเอียด: {{ showSummary.detail }}</p>
+          <p>ไฟล์ pdf:</p>
+          <v-divider></v-divider>
+          <v-spacer></v-spacer>
+          <h3>สรุปผลจากผู้ใต้บังคับบัญชา {{ showSummary.user.name }}</h3>
+          <p>ผู้ตรวจสอบ: {{ showSummary.user.name }}</p>
+          <p>
+            รายละเอียดการสรุปผล:
+            {{ showSummary.summary && showSummary.summary.summary_detail }}
+          </p>
+          <p>
+            สถานะงาน:
+            {{ showSummary.summary && showSummary.summary.conclusion }}
+          </p>
+          <p>
+            ไฟล์ผลการตรวจสอบที่แนบมาด้วย:
+            {{ showSummary.summary && showSummary.summary.file }}
+          </p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog_showSummary = false"
+          >
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -102,6 +173,10 @@ import Swal from "sweetalert2";
 export default {
   data() {
     return {
+      dialog_showSummary:false,
+      showSummary:{user: {}},
+      dialog_showDetail:false,
+      showDetail: {},
       itemSummary: {},
       myworks: [],
       addSummaryValid: false,
@@ -116,7 +191,8 @@ export default {
         },
 
         { text: "สถานะงาน", value: "status" },
-        { text: "Action", value: "action" },
+        { text: "วันเวลาที่มอบหมายงาน", value: "updated_at" },
+        { text: "การกระทำ", value: "action" },
       ],
     };
   },

@@ -1,36 +1,13 @@
 <template>
   <div>
     <v-app>
-      <v-app-bar dense dark>
-        <v-toolbar-title>Tool Bar</v-toolbar-title>
+      <v-app-bar dense dark class="flex-grow-0">
+        <v-toolbar-title><a href="/" style="color:white; text-decoration:none;">SA Managament</a></v-toolbar-title>
 
         <v-spacer></v-spacer>
-        <v-btn to="/">
-          Home
-        </v-btn>
-
-        <v-btn to="/admin" v-if="$store.state.user_data.role == 'ADMIN'">
-          Admin
-        </v-btn>
-
-        <v-btn to="/employee" v-if="$store.state.user_data.role == 'EMPLOYEE'">
-          Employee
-        </v-btn>
-
-        <v-btn
-          to="/booking_time"
-          v-if="$store.state.user_data.role == 'EMPLOYEE'"
-        >
-          จองเวลา
-        </v-btn>
-
-        <v-btn to="/schedule" v-if="$store.state.user_data.role == 'ADMIN'">
-          ปฏิทินนัดหมาย
-        </v-btn>
-
-        <v-btn icon>
-          <v-icon>mdi-magnify</v-icon>
-        </v-btn>
+        <span v-if="$store.state.token != ''"> ยินดีต้อนรับ คุณ {{$store.state.user_data.name}}</span>
+        
+        <v-btn to='/login'>Login</v-btn>
 
         <v-menu left bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -38,8 +15,28 @@
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
-
+      <!-- ยังไม่เข้าระบบ -->
           <v-list>
+            <v-list-item v-if="$store.state.token == ''" @click="$router.push('Login')">
+              <v-list-item-title>Login</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item @click="$router.push('/')">
+              <v-list-item-title>Home</v-list-item-title>
+            </v-list-item>
+
+             <v-list-item  v-if="$store.state.user_data.role == 'EMPLOYEE'" @click="$router.push('/employee')">
+              <v-list-item-title>เมนูของพนักงาน</v-list-item-title>
+            </v-list-item>
+       
+       <v-list-item  v-if="$store.state.user_data.role == 'ADMIN'" @click="$router.push('/admin')">
+              <v-list-item-title>เมนูของแอดมิน</v-list-item-title>
+            </v-list-item>
+
+               <v-list-item  v-if="$store.state.user_data.role == 'ADMIN'" @click="$router.push('/schedule')">
+              <v-list-item-title>ปฏิทินนัดหมาย</v-list-item-title>
+            </v-list-item>
+       <!-- Employee -->
             <v-list-item
               v-if="$store.state.token != ''"
               @click="

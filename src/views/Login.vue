@@ -3,8 +3,9 @@
     <v-row class="justify-center align-center">
       <v-col cols="6" class="left">
         <h1 class="text-center" style="color:white;">
-          ติดต่อรับรหัสได้ที่ผู้บังคับบัญชาของท่าน <br />
-          ติดต่อ 000-000-0000
+          Welcome to Manage by Chitra! <br/>
+    
+
         </h1></v-col
       ><v-col cols="6" class="right">
         <h1 class="text-center">

@@ -1,5 +1,5 @@
 <template>
-   <v-container>
+  <v-container>
     <v-row style="margin-top: 5px">
       <v-col cols="3">
         <span>ส่วนเสริมของพนักงาน</span>
@@ -19,8 +19,10 @@
         </div>
       </v-col>
       <v-col>
-
-            <viewWorks v-if="current_component == 'view_works'" />
+        <viewWorks v-if="current_component == 'view_works'" />
+        <viewAppointments
+          v-else-if="current_component == 'view_appointments'"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -28,9 +30,10 @@
 
 <script>
 import viewWorks from "@/components/employee/view_works.vue";
+import viewAppointments from "@/components/employee/view_appointments.vue";
 
 export default {
-  components: { viewWorks },
+  components: { viewWorks, viewAppointments },
   data() {
     return {
       current_component: "view_works",
@@ -40,7 +43,10 @@ export default {
           name: "view_works",
           name_l: "งานที่ได้รับมอบหมาย",
         },
-       
+        {
+          name: "view_appointments",
+          name_l: "นัดหมาย",
+        },
       ],
     };
   },
@@ -48,5 +54,18 @@ export default {
 </script>
 
 <style>
+.type_select_btn {
+  padding: 1vh;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  transition: 0.5s;
+  cursor: pointer;
+}
 
-</style>
+.type_select_btn:hover {
+  background: #d8d8d8;
+}
+
+.active {
+  background: #f1f1f1;
+}</style>

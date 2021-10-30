@@ -36,7 +36,6 @@
           "
           >เลือกพนักงาน</v-btn
         >
-
         <v-btn
           v-else-if="item.status == 'เห็นชอบ' || item.status == 'ไม่เห็นชอบ'"
           @click="
@@ -53,6 +52,15 @@
           "
           >ดูรายละเอียด</v-btn
         >
+      </template>
+      <template v-slot:[`item.delete`]="{ item, index }">
+        <v-icon
+          small
+          v-if="item.status != 'รอดำเนินการ'"
+          @click="confirmed_delete(item.id, index)"
+        >
+          mdi-delete
+        </v-icon>
       </template>
     </v-data-table>
 
@@ -74,9 +82,18 @@
           <v-spacer></v-spacer>
           <h3>สรุปผลจากผู้ใต้บังคับบัญชา {{ showSummary.user.name }}</h3>
           <p>ผู้ตรวจสอบ: {{ showSummary.user.name }}</p>
-          <p>รายละเอียดการสรุปผล: {{ showSummary.summary && showSummary.summary.summary_detail}}</p>
-          <p>สถานะงาน: {{showSummary.summary && showSummary.summary.conclusion }}</p>
-          <p>ไฟล์ผลการตรวจสอบที่แนบมาด้วย: {{ showSummary.summary && showSummary.summary.pdf_file }}</p>
+          <p>
+            รายละเอียดการสรุปผล:
+            {{ showSummary.summary && showSummary.summary.summary_detail }}
+          </p>
+          <p>
+            สถานะงาน:
+            {{ showSummary.summary && showSummary.summary.conclusion }}
+          </p>
+          <p>
+            ไฟล์ผลการตรวจสอบที่แนบมาด้วย:
+            {{ showSummary.summary && showSummary.summary.file }}
+          </p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -184,22 +201,36 @@
               </v-row>
             </v-container>
             <small>* indicates required field</small>
-            <v-col cols="12" sm="6">
+            <!-- <v-col cols="12" sm="6">
               <v-text-field
-                v-model="addWork.pdf_file"
-                label="pdf file"
+                v-model="addWork.file"
+                label="file"
               ></v-text-field>
+            </v-col> -->
+            <v-col>
+              <v-file-input
+                v-model="addWork.file"
+                accept=".doc,.docx,.txt, .pdf"
+                label="อัพโหลดเอกสารเพิ่มเติม"
+                required
+              ></v-file-input>
             </v-col>
-            <!-- <v-file-input
-                  v-model="addWork.pdf_file"
-                  accept="image/*"
-                  label="อัพโหลดเอกสารเพิ่มเติม"
-                ></v-file-input> -->
-            <v-col> </v-col>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog_addWork = false">
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="
+                dialog_addWork = false;
+                addWork.file = '';
+                (addWork.province = ''),
+                  (addWork.title = ''),
+                  (addWork.detail = ''),
+                  (addWork.accused_name = ''),(addWork.complainer_name='')
+                  (addWork.type = '');
+              "
+            >
               Close
             </v-btn>
             <v-btn
@@ -281,7 +312,7 @@ export default {
         detail: "",
         type: "",
         province: "",
-        pdf_file: "",
+        file: null,
       },
       province: [
         "กำแพงเพชร",
@@ -316,13 +347,43 @@ export default {
 
         { text: "สถานะงาน", value: "status" },
         { text: "ผู้รับผิดชอบงาน", value: "user.name" },
-        { text: "มอบหมายงาน", value: "action" },
+        { text: "การกระทำ", value: "action" },
+        { text: "ลบ", value: "delete" },
       ],
       works: [],
       employees: [],
     };
   },
   methods: {
+    confirmed_delete(id, index) {
+      Swal.fire({
+        title: "คุณแน่ใจว่าจะลบ?",
+        text: "การลบจะไม่สามารถคืนสิ่งที่ลบได้",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยัน",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const token = this.$store.state.token;
+          this.$http
+            .delete("http://127.0.0.1:8000/api/work/" + id, {
+              headers: { Authorization: `${token}` },
+            })
+            .then((response) => {
+              if (response.data && response.data.status != "error") {
+                Swal.fire("ลบงานนี้เรียบร้อย", "", "success");
+                this.works.splice(index, 1);
+              } else {
+                Swal.fire("ไม่สามารถลบงานนี้ได้", "", "error");
+                console.log(response.data.error);
+              }
+            });
+        }
+      });
+    },
+
     confirmed_selectEmployee() {
       const token = this.$store.state.token;
       console.log(this.select_current.index);
@@ -354,9 +415,18 @@ export default {
         });
     },
     confirmed_addWork() {
+      let formData = new FormData();
+      formData.append("title", this.addWork.title);
+      formData.append("accused_name", this.addWork.accused_name);
+      formData.append("complainer_name", this.addWork.complainer_name);
+      formData.append("detail", this.addWork.detail);
+      formData.append("type", this.addWork.type);
+      formData.append("province", this.addWork.province);
+      formData.append("file", this.addWork.file);
+
       const token = this.$store.state.token;
       this.$http
-        .post("http://127.0.0.1:8000/api/work/", this.addWork, {
+        .post("http://127.0.0.1:8000/api/work/", formData, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
@@ -388,8 +458,7 @@ export default {
         if (response.data && response.data.status != "error") {
           this.works = response.data.works;
           this.employees = response.data.employees;
-          console.log(this.works)
-          
+          console.log(this.works);
         } else {
           console.log(response.data.error);
         }
