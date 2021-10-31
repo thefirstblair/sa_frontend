@@ -17,13 +17,18 @@
         เพิ่มผู้ใช้งานใหม่
       </v-btn>
 
+
+
+      <v-btn class="mx-2" @click="dialog_message = true">
+        <v-icon> mdi-message-text-outline </v-icon>
+        ส่งข้อความหาพนักงาน
+      </v-btn>
+
       <v-row>
         <v-col cols="12">
           <v-data-table :headers="headers" :items="user" :search="search">
             <template v-slot:[`item.actions`]="{ item, index }">
-              <v-icon small @click="dialog_message = true">
-                mdi-message-text-outline
-              </v-icon>
+        
               <v-icon
                 small
                 @click="

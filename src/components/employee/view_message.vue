@@ -29,13 +29,18 @@
         <v-card color="#f1f1f1" style="margin: 10px">
           <v-card-title class="text-h6">
             <label>
-              <h2>ข้อความจากผู้บังคับบัญชา #{{index+1}}</h2>
+              <h2>ข้อความจากผู้บังคับบัญชา</h2>
             </label>
           </v-card-title>
           <v-card-subtitle style="margin: 1px">
             <label>
               <span style="font-size:130%"
                 >ข้อความ: {{ item.detail }}
+                <br />
+               </span
+              >
+                 <span style="font-size:100%"
+                >ส่งเมื่อ: {{ item.created_at }}
                 <br />
                </span
               >
