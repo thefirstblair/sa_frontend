@@ -79,7 +79,7 @@
           <p>รายละเอียด: {{ showSummary.detail }}</p>
           <p>
             ไฟล์:
-            <a v-if="showSummary.file != null" :href="showSummary.file"
+            <a v-if="showSummary.file != null" @click.prevent="openWindow(showSummary.file)"
               >ดูไฟล์งาน</a
             >
             <span v-else> ไม่มีไฟล์งาน </span>
@@ -96,10 +96,14 @@
             สถานะงาน:
             {{ showSummary.summary && showSummary.summary.conclusion }}
           </p>
-          <p>
-            ไฟล์ผลการตรวจสอบที่แนบมาด้วย:
-            {{ showSummary.summary && showSummary.summary.file }}
+           <p>
+            ไฟล์:
+            <a v-if="showSummary.summary != null" @click.prevent="openWindow(showSummary.summary.file)"
+              >ดูไฟล์งาน</a
+            >
+            <span v-else> ไม่มีไฟล์งาน </span>
           </p>
+
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -128,7 +132,7 @@
           <p>รายละเอียด: {{ showDetail.detail }}</p>
           <p>
             ไฟล์:
-            <a v-if="showDetail.file != null" :href="showDetail.file"
+            <a v-if="showDetail.file != null" @click.prevent ="openWindow(showDetail.file)"
               >ดูไฟล์งาน</a
             >
             <span v-else> ไม่มีไฟล์งาน </span>
@@ -357,6 +361,9 @@ export default {
     };
   },
   methods: {
+    openWindow(link) {
+      window.open(link);
+    },
     confirmed_delete(id, index) {
       Swal.fire({
         title: "คุณแน่ใจว่าจะลบ?",

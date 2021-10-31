@@ -12,7 +12,7 @@
         ></v-text-field>
       </v-card-title>
 
-      <v-btn color="primary" class="mx-2" dark @click="dialog_addUser = true">
+      <v-btn  class="mx-2" @click="dialog_addUser = true">
         <v-icon> mdi-plus </v-icon>
         เพิ่มผู้ใช้งานใหม่
       </v-btn>

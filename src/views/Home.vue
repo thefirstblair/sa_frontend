@@ -27,7 +27,7 @@
           height="19px"
           src="https://media.discordapp.net/attachments/741986644542095360/904037851237347388/icons8-email-64.png"
         />
-         chitra.m@gmail.com <br />
+        chitra.m@gmail.com <br />
         <img
           height="17px"
           src="https://media.discordapp.net/attachments/904027819103912006/904027885130625054/icons8-telephone-60.png"
@@ -41,42 +41,46 @@
         สามเสนใน เขตพญาไท กรุงเทพมหานคร 10400 <br />
       </v-col>
 
-       <v-col cols="3">
-        <span class="font-weight-black"
-          >ช่องทางการติดต่อขอรับบัญชีผู้ใช้
-        </span>
-        <br/>
-        <span>- ผู้ใต้บังคับบัญชาของนาง จิตรา เมฆาพงศ์พันธุ์ สามารถขอรับบัญชีผู้ใช้ได้จากผู้บังคับบัญชาของตนเอง</span>
-        
-        
+      <v-col cols="3">
+        <span class="font-weight-black">ช่องทางการติดต่อขอรับบัญชีผู้ใช้ </span>
+        <br />
+        <span
+          >- ผู้ใต้บังคับบัญชาของนาง จิตรา เมฆาพงศ์พันธุ์
+          สามารถขอรับบัญชีผู้ใช้ได้จากผู้บังคับบัญชาของตนเอง</span
+        >
       </v-col>
     </v-row>
     <v-row align="center" justify="center">
       <v-btn to="login" v-if="$store.state.token == ''">
-      เข้าสู่ระบบ
+        เข้าสู่ระบบ
       </v-btn>
     </v-row>
 
-    <v-row style='margin-top: 20px' align="center" justify="center">
-      <v-btn to="/admin" v-if="$store.state.user_data.role == 'ADMIN'">
-        Admin
-      </v-btn>
-<v-col cols='1'></v-col>
-      <v-btn to="/schedule" v-if="$store.state.user_data.role == 'ADMIN'">
+    <v-row style="margin-top: 20px" align="center" justify="center">
+      <v-btn large to="/schedule" v-if="$store.state.user_data.role == 'ADMIN'">
         ปฏิทินนัดหมาย
+      </v-btn>
+      <v-col cols="1"></v-col>
+      <v-btn large to="/admin" v-if="$store.state.user_data.role == 'ADMIN'">
+        เข้าเมนูจัดการสำหรับผู้บังคับบัญชา
       </v-btn>
     </v-row>
 
     <v-row align="center" justify="center">
-      <v-btn large
+      <v-btn
+        large
         to="/booking_time"
         v-if="$store.state.user_data.role == 'EMPLOYEE'"
       >
         จองเวลา
       </v-btn>
-<v-col cols='1'></v-col>
-      <v-btn large to="/employee" v-if="$store.state.user_data.role == 'EMPLOYEE'">
-        เข้าเมนูจัดการสำหรับพนักงาน
+      <v-col cols="1"></v-col>
+      <v-btn
+        large
+        to="/employee"
+        v-if="$store.state.user_data.role == 'EMPLOYEE'"
+      >
+        เข้าเมนูจัดการสำหรับผู้ใต้บังคัญชา
       </v-btn>
     </v-row>
   </v-container>

@@ -12,7 +12,7 @@
             <v-icon>mdi-chevron-right</v-icon>
           </v-btn>
         </v-sheet>
-        <v-sheet height="400">
+        <v-sheet height="700">
           <v-calendar
             ref="calendar"
             :events="events"
