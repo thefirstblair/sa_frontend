@@ -26,7 +26,11 @@
       :search="search"
       class="elevation-1"
     >
+              <template v-slot:[`item.status`]="{item}">
+            <v-chip :color="item.status == 'Confirmed' ? 'green' : 'red'" outlined> {{ item.status}}</v-chip>
+          </template>
       <template v-slot:[`item.action`]="{ item, index }">
+
         <v-btn
           v-if="item.status == 'Waiting'"
           @click="

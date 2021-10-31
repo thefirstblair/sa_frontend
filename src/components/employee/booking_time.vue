@@ -66,8 +66,8 @@
           </div>
           <v-btn
             large
-            text
-            color="primary"
+           dark
+            
             type="submit"
             :disabled="!addAppointmentValid"
           >

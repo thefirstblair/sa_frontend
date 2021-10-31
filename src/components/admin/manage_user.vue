@@ -12,7 +12,7 @@
         ></v-text-field>
       </v-card-title>
 
-      <v-btn  class="mx-2" @click="dialog_addUser = true">
+      <v-btn class="mx-2" @click="dialog_addUser = true">
         <v-icon> mdi-plus </v-icon>
         เพิ่มผู้ใช้งานใหม่
       </v-btn>
@@ -21,6 +21,9 @@
         <v-col cols="12">
           <v-data-table :headers="headers" :items="user" :search="search">
             <template v-slot:[`item.actions`]="{ item, index }">
+              <v-icon small @click="dialog_message = true">
+                mdi-message-text-outline
+              </v-icon>
               <v-icon
                 small
                 @click="
@@ -41,6 +44,57 @@
           </v-data-table>
         </v-col>
       </v-row>
+
+      <!-- Sent Message -->
+      <v-dialog v-model="dialog_message" max-width="600px">
+        <v-card>
+          <v-form
+            @submit.prevent="confirmed_selectEmployee"
+            v-model="messageValid"
+          >
+            <v-card-title>
+              <span class="text-h5">ส่งข้อความหาพนักงาน</span>
+            </v-card-title>
+
+            <v-divider />
+            <v-col cols="12">
+              <v-select
+                :items="employees"
+                item-text="name"
+                label="เลือกผู้ที่จะส่งข้อความหา"
+                dense
+                v-model="message.employee"
+                return-object
+                style="margin:20px"
+              ></v-select
+            ></v-col>
+
+            <v-col cols="12">
+              <v-textarea height="100px"
+                v-model="message.detail"
+                required
+                label="ข้อความที่จะส่ง"
+                auto-grow
+                outlined
+              ></v-textarea>
+            </v-col>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="dialog_message = false; message.employee ='', message.detail =''">
+                Close
+              </v-btn>
+              <v-btn
+                color="blue darken-1"
+                text
+                type="submit"
+                :disabled="!messageValid"
+              >
+                ส่งข้อความ
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card>
+      </v-dialog>
 
       <!-- ADD USER -->
       <div id="app">
@@ -201,7 +255,11 @@ import Swal from "sweetalert2";
 export default {
   data() {
     return {
+      employees: [],
+      message: {},
       search: "",
+      messageValid: false,
+      dialog_message: false,
       dialog_addUser: false,
       dialog_editUser: false,
       addUserValid: false,
@@ -229,6 +287,33 @@ export default {
     };
   },
   methods: {
+    // Message
+    confirmed_selectEmployee(){
+       const token = this.$store.state.token;
+       console.log(this.message.employee.id);
+       this.message.receiver_id = this.message.employee.id;
+      this.$http
+        .post("http://127.0.0.1:8000/api/message/", this.message, {
+          headers: { Authorization: `${token}` },
+        })
+        .then((response) => {
+          if (response.data && response.data.status != "error") {
+            this.dialog_message = false;
+            Swal.fire("ส่งข้อความไปเรียบร้อย", "", "success");
+            console.log(response.data);
+            this.message = {
+             detail: '',
+            };
+          } else {
+            Swal.fire(
+              "ไม่สามารถเพิ่มผู้ใช้งานได้ โปรดตรวจสอบ Username กับ Password ของท่านอีกครั้ง",
+              "",
+              "error"
+            );
+            console.log(response.data.error);
+          }
+        });
+    },
     // Add
     confirmed_addUser() {
       const token = this.$store.state.token;
@@ -336,6 +421,20 @@ export default {
       .then((response) => {
         if (response.data && response.data.status != "error") {
           this.user = response.data;
+          console.log(response.data.employees);
+        } else {
+          console.log(response.data.error);
+        }
+      });
+
+      this.$http
+      .get("http://127.0.0.1:8000/api/user/employees", {
+        headers: { Authorization: `${token}` },
+      })
+      .then((response) => {
+        if (response.data && response.data.status != "error") {
+          this.employees = response.data;
+       
         } else {
           console.log(response.data.error);
         }

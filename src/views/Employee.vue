@@ -23,6 +23,7 @@
         <viewAppointments
           v-else-if="current_component == 'view_appointments'"
         />
+        <viewMessage v-else-if="current_component == 'view_message'" />
       </v-col>
     </v-row>
   </v-container>
@@ -31,9 +32,10 @@
 <script>
 import viewWorks from "@/components/employee/view_works.vue";
 import viewAppointments from "@/components/employee/view_appointments.vue";
+import viewMessage from "@/components/employee/view_message.vue";
 
 export default {
-  components: { viewWorks, viewAppointments },
+  components: { viewWorks, viewAppointments, viewMessage },
   data() {
     return {
       current_component: "view_works",
@@ -46,6 +48,10 @@ export default {
         {
           name: "view_appointments",
           name_l: "นัดหมาย",
+        },
+        {
+          name: "view_message",
+          name_l: "ข้อความที่ได้รับ",
         },
       ],
     };
@@ -68,4 +74,5 @@ export default {
 
 .active {
   background: #f1f1f1;
-}</style>
+}
+</style>

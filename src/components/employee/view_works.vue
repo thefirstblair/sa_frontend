@@ -11,6 +11,9 @@
       ><v-col>
         <v-data-table :headers="headers" :items="myworks" class="elevation-1">
           <!-- click เปิดรายละเอียดที่หัวหน้า create มาได้ -->
+          <template v-slot:[`item.status`]="{item}">
+            <v-chip :color="item.status == 'เห็นชอบ' ? 'green' : 'red'"> {{ item.status}}</v-chip>
+          </template>
           <template v-slot:[`item.action`]="{ item, index }">
             <v-btn
               v-if="item.status == 'รอดำเนินการ'"
