@@ -30,7 +30,7 @@
               v-model="addAppointment.detail"
             ></v-textarea>
           </v-col>
-          <div id="app" data-app>
+          <div data-app>
             <v-row>
               <v-col cols="2">
                 <v-menu>
@@ -47,12 +47,15 @@
                   <v-date-picker
                     header-color="green lighten-1"
                     v-model="addAppointment.booking_date"
-                    @input="menu= false"
+                    @input="
+                      selected_date();
+                      menu = false;
+                    "
                   ></v-date-picker
                 ></v-menu>
               </v-col>
 
-              <v-col cols="2">
+              <v-col cols="2" v-if="time != undefined">
                 <v-select
                   :items="time"
                   label="เลือกเวลานัด"
@@ -61,13 +64,18 @@
               </v-col>
             </v-row>
           </div>
-          <v-btn large text color="primary" type="submit" :disabled="!addAppointmentValid">
+          <v-btn
+            large
+            text
+            color="primary"
+            type="submit"
+            :disabled="!addAppointmentValid"
+          >
             ส่งคำขอคำปรึกษา
           </v-btn>
         </v-form>
       </v-col>
     </v-row>
-
   </v-container>
 </template>
 
@@ -79,12 +87,26 @@ export default {
       date: null,
       addAppointment: {},
       addAppointmentValid: false,
-
       menu: false,
-      time: ["12.00", "13.00", "14.00"],
+      time: null,
     };
   },
   methods: {
+    selected_date() {
+      this.$http
+        .get(
+          "http://127.0.0.1:8000/api/appointment/time/" +
+            this.addAppointment.booking_date,
+          {
+            headers: { Authorization: `${this.$store.state.token}` },
+          }
+        )
+        .then((response) => {
+          if (response.data && response.data.length > 0) {
+            this.time = response.data;
+          }
+        });
+    },
     async reload() {
       location.reload();
     },
@@ -101,8 +123,7 @@ export default {
               "",
               "success"
             );
-            this.addAppointment = {
-            };
+            this.addAppointment = {};
             this.reload();
           } else {
             Swal.fire("ไม่สามารถนัดหมายได้", "", "error");

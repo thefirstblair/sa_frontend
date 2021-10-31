@@ -22,8 +22,24 @@
               "
               >ส่งรายงาน</v-btn
             >
-            <v-btn v-if="item.status == 'รอดำเนินการ'" @click="dialog_showDetail = true; showDetail = item;">ดูรายละเอียด</v-btn>
-            <v-btn v-else-if="item.status == 'เห็นชอบ' || item.status == 'ไม่เห็นชอบ'" @click="dialog_showSummary = true; showSummary = item;">ดูสรุปผล</v-btn>
+            <v-btn
+              v-if="item.status == 'รอดำเนินการ'"
+              @click="
+                dialog_showDetail = true;
+                showDetail = item;
+              "
+              >ดูรายละเอียด</v-btn
+            >
+            <v-btn
+              v-else-if="
+                item.status == 'เห็นชอบ' || item.status == 'ไม่เห็นชอบ'
+              "
+              @click="
+                dialog_showSummary = true;
+                showSummary = item;
+              "
+              >ดูสรุปผล</v-btn
+            >
           </template>
         </v-data-table>
       </v-col></v-row
@@ -41,15 +57,17 @@
           <p>ชื่อผู้ร้องเรียน: {{ showDetail.complainer_name }}</p>
           <p>ประเภทการร้องเรียน: {{ showDetail.type }}</p>
           <p>รายละเอียด: {{ showDetail.detail }}</p>
-          <p>ไฟล์ pdf:</p>
+          <p>
+            ไฟล์:
+            <a v-if="showDetail.file != null" :href="showDetail.file"
+              >ดูไฟล์งาน</a
+            >
+            <span v-else> ไม่มีไฟล์งาน </span>
+          </p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            text
-            @click="dialog_showDetail = false"
-          >
+          <v-btn color="green darken-1" text @click="dialog_showDetail = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -96,7 +114,8 @@
                   ></v-textarea>
                 </v-col>
 
-                <v-col cols="6">
+                <v-col cols="12">
+                  สถานะงาน
                   <v-select
                     :items="status"
                     dense
@@ -104,7 +123,13 @@
                   ></v-select>
                 </v-col>
 
-                <v-col><v-text-field label="pdf file"> </v-text-field></v-col>
+                <v-col cols="12">
+                  <v-file-input
+                    v-model="itemSummary.file"
+                    accept=".doc,.docx,.txt, .pdf"
+                    label="อัพโหลดเอกสารเพิ่มเติม"
+                  ></v-file-input>
+                </v-col>
               </v-row>
             </v-container>
           </v-card-text>
@@ -120,9 +145,9 @@
         </v-form>
       </v-card>
     </v-dialog>
-    
+
     <!-- Dialog แสดงสรุปผล-->
-      <v-dialog v-model="dialog_showSummary" width="600px">
+    <v-dialog v-model="dialog_showSummary" width="600px">
       <v-card>
         <v-card-title>
           <h2>สรุปผลการร้องเรียน</h2>
@@ -134,7 +159,15 @@
           <p>ชื่อผู้ร้องเรียน: {{ showSummary.complainer_name }}</p>
           <p>ประเภทการร้องเรียน: {{ showSummary.type }}</p>
           <p>รายละเอียด: {{ showSummary.detail }}</p>
-          <p>ไฟล์ pdf:</p>
+          <p>
+            ไฟล์:
+            <a
+              v-if="showSummary && showSummary.file != null"
+              @click.prevent="openWindow(showSummary.file)"
+              >ดูไฟล์งาน</a
+            >
+            <span v-else> ไม่มีไฟล์งาน </span>
+          </p>
           <v-divider></v-divider>
           <v-spacer></v-spacer>
           <h3>สรุปผลจากผู้ใต้บังคับบัญชา {{ showSummary.user.name }}</h3>
@@ -149,7 +182,14 @@
           </p>
           <p>
             ไฟล์ผลการตรวจสอบที่แนบมาด้วย:
-            {{ showSummary.summary && showSummary.summary.file }}
+            <a
+              v-if="showSummary.summary && showSummary.summary.file != null"
+              @click.prevent="
+                showSummary.summary && openWindow(showSummary.summary.file)
+              "
+              >ดูไฟล์งาน</a
+            >
+            <span v-else> ไม่มีไฟล์งาน </span>
           </p>
         </v-card-text>
         <v-card-actions>
@@ -173,9 +213,9 @@ import Swal from "sweetalert2";
 export default {
   data() {
     return {
-      dialog_showSummary:false,
-      showSummary:{user: {}},
-      dialog_showDetail:false,
+      dialog_showSummary: false,
+      showSummary: { user: {} },
+      dialog_showDetail: false,
       showDetail: {},
       itemSummary: {},
       myworks: [],
@@ -197,17 +237,29 @@ export default {
     };
   },
   methods: {
+    openWindow(link) {
+      window.open(link);
+    },
     confirmed_addSummary() {
+      let formData = new FormData();
+      formData.append("work_id", this.itemSummary.work_id);
+      formData.append("summary_detail", this.itemSummary.summary_detail);
+      formData.append("conclusion", this.itemSummary.conclusion);
+
+      if (this.itemSummary.file) {
+        formData.append("file", this.itemSummary.file);
+        this.itemSummary.file = null;
+      }
       const token = this.$store.state.token;
       this.$http
-        .post("http://127.0.0.1:8000/api/summary/", this.itemSummary, {
+        .post("http://127.0.0.1:8000/api/summary/", formData, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
           if (response.data && response.data.status != "error") {
             Swal.fire("ทำรายงานสรุปสำเร็จ", "", "success");
-
             this.myworks.splice(this.itemSummary.index, 1, response.data);
+            console.log(this.myworks);
             this.dialog_result = false;
             this.itemSummary = {};
           } else {

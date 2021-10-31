@@ -7,7 +7,7 @@
         <v-spacer></v-spacer>
         <span v-if="$store.state.token != ''"> ยินดีต้อนรับ คุณ {{$store.state.user_data.name}}</span>
         
-        <v-btn to='/login'>Login</v-btn>
+        <v-btn v-else to='/login'>Login</v-btn>
 
         <v-menu left bottom>
           <template v-slot:activator="{ on, attrs }">

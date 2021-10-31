@@ -45,7 +45,7 @@
           >ดูสรุปผล</v-btn
         >
         <v-btn
-          v-else
+          v-if="item.status != 'เห็นชอบ' && item.status != 'ไม่เห็นชอบ'"
           @click="
             dialog_showDetail = true;
             showDetail = item;
@@ -77,7 +77,13 @@
           <p>ชื่อผู้ร้องเรียน: {{ showSummary.complainer_name }}</p>
           <p>ประเภทการร้องเรียน: {{ showSummary.type }}</p>
           <p>รายละเอียด: {{ showSummary.detail }}</p>
-          <p>ไฟล์ pdf:</p>
+          <p>
+            ไฟล์:
+            <a v-if="showSummary.file != null" :href="showSummary.file"
+              >ดูไฟล์งาน</a
+            >
+            <span v-else> ไม่มีไฟล์งาน </span>
+          </p>
           <v-divider></v-divider>
           <v-spacer></v-spacer>
           <h3>สรุปผลจากผู้ใต้บังคับบัญชา {{ showSummary.user.name }}</h3>
@@ -120,15 +126,17 @@
           <p>ชื่อผู้ร้องเรียน: {{ showDetail.complainer_name }}</p>
           <p>ประเภทการร้องเรียน: {{ showDetail.type }}</p>
           <p>รายละเอียด: {{ showDetail.detail }}</p>
-          <p>ไฟล์ pdf:</p>
+          <p>
+            ไฟล์:
+            <a v-if="showDetail.file != null" :href="showDetail.file"
+              >ดูไฟล์งาน</a
+            >
+            <span v-else> ไม่มีไฟล์งาน </span>
+          </p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            text
-            @click="dialog_showSummary = false"
-          >
+          <v-btn color="green darken-1" text @click="dialog_showDetail = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -201,18 +209,11 @@
               </v-row>
             </v-container>
             <small>* indicates required field</small>
-            <!-- <v-col cols="12" sm="6">
-              <v-text-field
-                v-model="addWork.file"
-                label="file"
-              ></v-text-field>
-            </v-col> -->
             <v-col>
               <v-file-input
                 v-model="addWork.file"
                 accept=".doc,.docx,.txt, .pdf"
                 label="อัพโหลดเอกสารเพิ่มเติม"
-                required
               ></v-file-input>
             </v-col>
           </v-card-text>
@@ -224,11 +225,12 @@
               @click="
                 dialog_addWork = false;
                 addWork.file = '';
-                (addWork.province = ''),
-                  (addWork.title = ''),
-                  (addWork.detail = ''),
-                  (addWork.accused_name = ''),(addWork.complainer_name='')
-                  (addWork.type = '');
+                addWork.province = '';
+                addWork.title = '';
+                addWork.detail = '';
+                addWork.accused_name = '';
+                addWork.complainer_name = '';
+                addWork.type = '';
               "
             >
               Close
@@ -422,7 +424,11 @@ export default {
       formData.append("detail", this.addWork.detail);
       formData.append("type", this.addWork.type);
       formData.append("province", this.addWork.province);
-      formData.append("file", this.addWork.file);
+
+      if (this.addWork.file) {
+        formData.append("file", this.addWork.file);
+        this.addWork.file = null;
+      }
 
       const token = this.$store.state.token;
       this.$http

@@ -1,20 +1,32 @@
 <template>
   <v-container>
-    <v-row style="margin-top:20px"> <h1>ปฏิทินนัดหมาย</h1>
-    </v-row>
-    <v-row>
-    <v-divider></v-divider></v-row>
+    <v-row style="margin-top:20px"> <h1>ปฏิทินนัดหมาย</h1></v-row>
     <v-row>
       <v-col>
-        <v-sheet height="700">
+        <v-sheet tile height="54" class="d-flex">
+          <v-btn icon class="ma-2" @click="$refs.calendar.prev()">
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn icon class="ma-2" @click="$refs.calendar.next()">
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-sheet>
+        <v-sheet height="400">
           <v-calendar
             ref="calendar"
-            :now="today"
-            :value="today"
             :events="events"
+            v-model="value"
             color="primary"
             type="week"
-          ></v-calendar>
+          >
+            <template v-slot:event="{ event }">
+              <div style="height:100%; text-align:center; margin-top:2%;">
+                {{ event.time }} - {{ event.endtime }} <b>{{ event.name }}</b><br>
+                ผู้นัดหมาย : {{ event.sender.name }}
+              </div>
+            </template>
+          </v-calendar>
         </v-sheet>
       </v-col>
     </v-row>
@@ -25,76 +37,28 @@
 export default {
   data() {
     return {
-      
-      today: "2019-01-10",
-      test_events: [],
-      events: [ 
-      ],
+      value: "",
+      events: [],
     };
   },
-  mounted() {
-    this.$refs.calendar.scrollToTime("08:00");
-  },
-  methods: {
-    putInArray() {
-      var i = 0;
-      for (i = 0; i < this.test_events.length; i++) {
-          this.events[i].name = this.test_events.title
-          this.events[i].start = this.test_events.booking_date 
-      }
-      console.log(this.events)
-      return this.events;
-    },
-    //   currentDate() {
-    //   const current = new Date();
-    //   const date = `${current.getFullYear()}/${current.getMonth()+1}/${current.getDate()}`;
-    //   console.log(date);
-    //   return date;
-    // }
-    },created() {
-
-    const token = this.$store.state.token;
+  created() {
     this.$http
-      .get("http://127.0.0.1:8000/api/appointment", {
-        headers: { Authorization: `${token}` },
+      .get("http://127.0.0.1:8000/api/appointment/calender", {
+        headers: { Authorization: `${this.$store.state.token}` },
       })
       .then((response) => {
         if (response.data && response.data.status != "error") {
-          this.test_events = response.data;
-          console.log(this.test_events)
+          this.events = response.data;
+          if(response.data && response.data.length > 0) {
+            this.$refs.calendar.scrollToTime(response.data[0].time);
+          }
         } else {
           console.log(response.data.error);
         }
       });
   },
-
-      
-  
-
 };
 </script>
 
 <style scoped>
-.my-event {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: 2px;
-  background-color: #1867c0;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  font-size: 12px;
-  padding: 3px;
-  cursor: pointer;
-  margin-bottom: 1px;
-  left: 4px;
-  margin-right: 8px;
-  position: relative;
-}
-
-.my-event.with-time {
-  position: absolute;
-  right: 4px;
-  margin-right: 0px;
-}
 </style>

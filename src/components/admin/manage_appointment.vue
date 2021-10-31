@@ -42,7 +42,6 @@
           @click="
             dialog_showDetail = true;
             showItem = item;
-      
           "
           >ดู Detail</v-btn
         >
@@ -131,15 +130,22 @@
       <v-card>
         <v-toolbar color="primary" dark>รายละเอียดการนัดหมาย</v-toolbar>
         <v-col>
-          <p class="font-weight-medium">หัวข้อ: {{ showItem.title }}</p>
-          <p class="font-weight-medium">รายละเอียด: {{ showItem.detail }}</p>
-          <p class="font-weight-medium">
-            วันนัดหมาย: {{ showItem.booking_date }} เวลา:
+          <span class="font-weight-black">หัวข้อ: </span
+          ><span class="data"> {{ showItem.title }}</span> <br />
+          <span class="font-weight-black">รายละเอียด: </span
+          ><span class="data">{{ showItem.detail }}</span> <br />
+          <span class="font-weight-black"> วันนัดหมาย: </span
+          ><span class="data">{{ showItem.booking_date }} </span
+          ><span class="font-weight-black" 
+            >เวลา: </span><span class="data">
             {{ showItem.booking_time }}
-          </p>
-          <p class="font-weight-medium">ผู้นัดหมาย: {{ showItem.name}}</p>
+          </span><br/>
+          <span class="font-weight-black"
+            >ผู้นัดหมาย:</span><span class="data"> {{ showItem.name }}</span
+          >
+          <br/>
 
-          <p class="font-weight-medium">สถานะ: {{ showItem.status }}</p>
+          <span class="font-weight-black">สถานะ:</span> <span class="data">{{ showItem.status }}</span>
         </v-col>
         <v-card-actions class="justify-end">
           <v-btn text @click="dialog_showDetail = false">Close</v-btn>
@@ -246,7 +252,7 @@ export default {
   created() {
     const token = this.$store.state.token;
     this.$http
-      .get("http://127.0.0.1:8000/api/appointment", {
+      .get("http://127.0.0.1:8000/api/appointment/all", {
         headers: { Authorization: `${token}` },
       })
       .then((response) => {
@@ -261,4 +267,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+span{
+  font-size: 120
+}
+</style>
