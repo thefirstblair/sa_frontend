@@ -255,7 +255,7 @@ export default {
       }
       const token = this.$store.state.token;
       this.$http
-        .post("http://127.0.0.1:8000/api/summary/", formData, {
+        .post("hhttps://sabackend.herokuapp.com/api/summary/", formData, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
@@ -275,7 +275,7 @@ export default {
   created() {
     const token = this.$store.state.token;
     this.$http
-      .get("http://127.0.0.1:8000/api/employee", {
+      .get("https://sabackend.herokuapp.com/api/employee", {
         headers: { Authorization: `${token}` },
       })
       .then((response) => {

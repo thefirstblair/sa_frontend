@@ -377,7 +377,7 @@ export default {
         if (result.isConfirmed) {
           const token = this.$store.state.token;
           this.$http
-            .delete("http://127.0.0.1:8000/api/work/" + id, {
+            .delete("https://sabackend.herokuapp.com/api/work/" + id, {
               headers: { Authorization: `${token}` },
             })
             .then((response) => {
@@ -400,7 +400,7 @@ export default {
 
       this.$http
         .put(
-          "http://127.0.0.1:8000/api/work/selectEmployee/" +
+          "https://sabackend.herokuapp.com/api/work/selectEmployee/" +
             this.select_current.id,
           this.select_current,
           {
@@ -439,7 +439,7 @@ export default {
 
       const token = this.$store.state.token;
       this.$http
-        .post("http://127.0.0.1:8000/api/work/", formData, {
+        .post("https://sabackend.herokuapp.com/api/work/", formData, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
@@ -464,7 +464,7 @@ export default {
   created() {
     const token = this.$store.state.token;
     this.$http
-      .get("http://127.0.0.1:8000/api/work", {
+      .get("https://sabackend.herokuapp.com/api/work", {
         headers: { Authorization: `${token}` },
       })
       .then((response) => {

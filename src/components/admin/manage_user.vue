@@ -331,6 +331,7 @@ export default {
             this.dialog_addUser = false;
             Swal.fire("เพิ่มผู้ใช้งานเรียบร้อย", "", "success");
             this.user.push(response.data.data);
+            this.employees.push(response.data.data)
             console.log(response.data.data);
             console.log(this.user);
             this.addUser = {
@@ -420,7 +421,7 @@ export default {
   created() {
     const token = this.$store.state.token;
     this.$http
-      .get("http://127.0.0.1:8000/api/user", {
+      .get("https://sabackend.herokuapp.com/api/user", {
         headers: { Authorization: `${token}` },
       })
       .then((response) => {
@@ -433,7 +434,7 @@ export default {
       });
 
       this.$http
-      .get("http://127.0.0.1:8000/api/user/employees", {
+      .get("https://sabackend.herokuapp.com/api/user/employees", {
         headers: { Authorization: `${token}` },
       })
       .then((response) => {

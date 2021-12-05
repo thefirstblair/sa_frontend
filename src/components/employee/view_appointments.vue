@@ -66,7 +66,7 @@ export default {
   created() {
     const token = this.$store.state.token;
     this.$http
-      .get("http://127.0.0.1:8000/api/appointment", {
+      .get("https://sabackend.herokuapp.com/api/appointment", {
         headers: { Authorization: `${token}` },
       })
       .then((response) => {

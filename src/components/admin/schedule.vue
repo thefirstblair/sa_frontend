@@ -43,7 +43,7 @@ export default {
   },
   created() {
     this.$http
-      .get("http://127.0.0.1:8000/api/appointment/calender", {
+      .get("https://sabackend.herokuapp.com/api/appointment/calender", {
         headers: { Authorization: `${this.$store.state.token}` },
       })
       .then((response) => {

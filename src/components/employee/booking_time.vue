@@ -95,7 +95,7 @@ export default {
     selected_date() {
       this.$http
         .get(
-          "http://127.0.0.1:8000/api/appointment/time/" +
+          "https://sabackend.herokuapp.com/api/appointment/time/" +
             this.addAppointment.booking_date,
           {
             headers: { Authorization: `${this.$store.state.token}` },
@@ -113,7 +113,7 @@ export default {
     confirm_addAppointment() {
       const token = this.$store.state.token;
       this.$http
-        .post("http://127.0.0.1:8000/api/appointment/", this.addAppointment, {
+        .post("https://sabackend.herokuapp.com/api/appointment/", this.addAppointment, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
@@ -123,8 +123,9 @@ export default {
               "",
               "success"
             );
-            this.addAppointment = {};
-            this.reload();
+            this.addAppointment = { 
+              title : '', detail : '', booking_date :'', booking_time :''};
+           
           } else {
             Swal.fire("ไม่สามารถนัดหมายได้", "", "error");
             console.log(response.data.error);
