@@ -65,7 +65,7 @@ export default {
   methods: {
     confirmed_login() {
       this.$http
-        .post("https://sabackend.herokuapp.com/api/auth/login/", this.loginform, {})
+        .post("https://sabackend.herokuapp.com/api/auth/login", this.loginform, {})
         .then((response) => {
           if (response.data && response.data.status != "error") {
             this.$store.commit("rememberUser", response.data.user);
