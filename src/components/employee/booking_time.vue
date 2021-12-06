@@ -113,7 +113,7 @@ export default {
     confirm_addAppointment() {
       const token = this.$store.state.token;
       this.$http
-        .post("https://sabackend.herokuapp.com/api/appointment/", this.addAppointment, {
+        .post("https://sabackend.herokuapp.com/api/appointment", this.addAppointment, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {

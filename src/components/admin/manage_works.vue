@@ -439,7 +439,7 @@ export default {
 
       const token = this.$store.state.token;
       this.$http
-        .post("https://sabackend.herokuapp.com/api/work/", formData, {
+        .post("https://sabackend.herokuapp.com/api/work", formData, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
