@@ -30,6 +30,7 @@
         chitra.m@gmail.com <br />
         <img
           height="17px"
+          src="https://cdn.discordapp.com/attachments/741986644542095360/947588195334377492/telephone-call.png"
         />
         081-922-4320 <br />
         <img
@@ -79,7 +80,7 @@
         to="/employee"
         v-if="$store.state.user_data.role == 'EMPLOYEE'"
       >
-        เข้าเมนูจัดการสำหรับผู้ใต้บังคัญชา
+        เข้าเมนูจัดการสำหรับผู้ใต้บังคับบัญชา
       </v-btn>
     </v-row>
   </v-container>
