@@ -30,7 +30,6 @@
         chitra.m@gmail.com <br />
         <img
           height="17px"
-          src="https://media.discordapp.net/attachments/904027819103912006/904027885130625054/icons8-telephone-60.png"
         />
         081-922-4320 <br />
         <img
