@@ -298,7 +298,7 @@ export default {
        console.log(this.message.employee.id);
        this.message.receiver_id = this.message.employee.id;
       this.$http
-        .post("http://127.0.0.1:8000/api/message/", this.message, {
+        .post("https://sabackend.herokuapp.com/api/message", this.message, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
@@ -323,7 +323,7 @@ export default {
     confirmed_addUser() {
       const token = this.$store.state.token;
       this.$http
-        .post("http://127.0.0.1:8000/api/user/", this.addUser, {
+        .post("https://sabackend.herokuapp.com/api/user", this.addUser, {
           headers: { Authorization: `${token}` },
         })
         .then((response) => {
@@ -356,7 +356,7 @@ export default {
         const token = this.$store.state.token;
         this.$http
           .put(
-            "http://127.0.0.1:8000/api/user/" + this.editUser.id,
+            "https://sabackend.herokuapp.com/api/user/" + this.editUser.id,
             this.editUser,
             {
               headers: { Authorization: `${token}` },
@@ -396,7 +396,7 @@ export default {
           console.log(id);
           console.log(index);
           this.$http
-            .delete("http://127.0.0.1:8000/api/user/" + id, {
+            .delete("https://sabackend.herokuapp.com/api/user/" + id, {
               headers: { Authorization: `${token}` },
             })
             .then((response) => {
